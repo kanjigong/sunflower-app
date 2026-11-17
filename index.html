@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>해바라기 미슐랭 가이드 - 투자 평가앱</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap');
+
+        body {
+            margin: 0; padding: 0;
+            background-color: #f8fafc;
+            font-family: 'Gowun Dodum', sans-serif;
+            color: #334155;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* 스마트폰 앱 화면 느낌 */
+        .app-container {
+            width: 100%; max-width: 500px;
+            background: white; min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding-bottom: 90px;
+        }
+
+        .header {
+            background-color: #f59e0b; color: white;
+            padding: 20px; text-align: center;
+            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .header h1 { font-family: 'Jua', sans-serif; margin: 0; font-size: 1.8rem; }
+        .header p { margin: 5px 0 0 0; font-size: 0.95rem; opacity: 0.9; }
+
+        .content { padding: 20px; }
+
+        .card {
+            background: #ffffff; border: 1px solid #e2e8f0;
+            border-radius: 15px; padding: 20px; margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        label.title {
+            font-family: 'Jua', sans-serif; font-size: 1.2rem;
+            color: #1e293b; display: block; margin-bottom: 10px;
+        }
+
+        input[type="text"], input[type="tel"], select, textarea {
+            width: 100%; padding: 12px; margin-bottom: 10px;
+            border: 2px solid #cbd5e1; border-radius: 10px;
+            font-family: 'Gowun Dodum', sans-serif; font-size: 1rem;
+            box-sizing: border-box; outline: none; transition: 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #f59e0b; }
+        
+        .input-group { margin-bottom: 5px; }
+        .input-group span { font-size: 0.9rem; font-weight: bold; color: #475569; display: block; margin-bottom: 5px; }
+
+        /* 별점 스타일 */
+        .star-group { margin-bottom: 20px; }
+        .star-title {
+            display: flex; justify-content: space-between;
+            font-weight: bold; margin-bottom: 8px; color: #475569;
+        }
+        .stars {
+            display: flex; gap: 10px; justify-content: center;
+            background: #f1f5f9; padding: 10px; border-radius: 12px;
+        }
+        .star {
+            font-size: 2.5rem; color: #cbd5e1; cursor: pointer;
+            transition: 0.2s transform; user-select: none;
+        }
+        .star:active { transform: scale(0.8); }
+        .star.active { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+
+        /* 보너스 체크박스 */
+        .bonus-box {
+            background: #fefce8; border: 2px dashed #fde047;
+            padding: 15px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: space-between;
+            font-weight: bold; color: #ca8a04; cursor: pointer;
+        }
+        .bonus-box input[type="checkbox"] {
+            transform: scale(1.5); accent-color: #eab308;
+        }
+
+        /* 하단 총 투자금 바 */
+        .bottom-bar {
+            position: fixed; bottom: 0; left: 50%;
+            transform: translateX(-50%); width: 100%; max-width: 500px;
+            background: white; border-top: 1px solid #e2e8f0;
+            padding: 15px 15px; box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 20;
+            gap: 10px;
+        }
+        
+        .reset-btn {
+            background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;
+            padding: 10px 12px; border-radius: 12px; font-family: 'Jua', sans-serif;
+            font-size: 1rem; cursor: pointer; transition: 0.2s; flex-shrink: 0;
+        }
+        .reset-btn:active { background: #e2e8f0; transform: translateY(2px); }
+
+        .total-text {
+            font-family: 'Jua', sans-serif; font-size: 1.1rem; color: #334155;
+            text-align: center; line-height: 1.2; flex-grow: 1;
+        }
+        .total-score {
+            font-size: 1.6rem; color: #ea580c;
+        }
+        
+        .submit-btn {
+            background: #ea580c; color: white; border: none;
+            padding: 12px 20px; border-radius: 30px; font-family: 'Jua', sans-serif;
+            font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3);
+            transition: 0.2s; flex-shrink: 0;
+        }
+        .submit-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        /* 로딩 화면 */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); display: none;
+            justify-content: center; align-items: center; flex-direction: column;
+            z-index: 100; font-family: 'Jua', sans-serif; color: #ea580c; font-size: 1.5rem;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3; border-top: 5px solid #ea580c;
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🌻 해바라기 맛집 평가앱</h1>
+            <p>선생님의 소중한 투자가 아이들을 춤추게 합니다!</p>
+        </div>
+
+        <div class="content">
+            <!-- 투자자 인증 정보 추가 -->
+            <div class="card" style="border-color: #fde047; background: #fefce8;">
+                <label class="title" style="color: #b45309;">👨‍🏫 투자자 정보 (인증)</label>
+                <div class="input-group">
+                    <span>선생님 성함</span>
+                    <input type="text" id="teacherName" placeholder="예: 공성배 선생님">
+                </div>
+                <div class="input-group">
+                    <span>내선번호 (숫자만)</span>
+                    <input type="tel" id="extNumber" placeholder="예: 123">
+                </div>
+            </div>
+
+            <div class="card">
+                <label class="title">🍽️ 평가할 맛집(모둠)을 선택하세요</label>
+                <select id="teamName" style="margin-bottom: 0;">
+                    <option value="">선택해주세요</option>
+                    <option value="1모둠">1모둠 맛집</option>
+                    <option value="2모둠">2모둠 맛집</option>
+                    <option value="3모둠">3모둠 맛집</option>
+                    <option value="4모둠">4모둠 맛집</option>
+                    <option value="5모둠">5모둠 맛집</option>
+                    <option value="6모둠">6모둠 맛집</option>
+                </select>
+            </div>
+
+            <div class="card">
+                <label class="title">⭐ 맛집 투자 별점 (항목당 최대 3송이)</label>
+                
+                <div class="star-group">
+                    <div class="star-title"><span>1. 영양과 건강 (바른 식생활)</span> <span id="val-q1">0 송이</span></div>
+                    <div class="stars" data-group="q1">
+                        <span class="star" data-val="1">★</span>
+                        <span class="star" data-val="2">★</span>
+                        <span class="star" data-val="3">★</span>
+                    </div>
+                </div>
+
+                <div class="star-group">
+                    <div class="star-title"><span>2. 음식의 맛과 창의성</span> <span id="val-q2">0 송이</span></div>
+                    <div class="stars" data-group="q2">
+                        <span class="star" data-val="1">★</span>
+                        <span class="star" data-val="2">★</span>
+                        <span class="star" data-val="3">★</span>
+                    </div>
+                </div>
+
+                <div class="star-group">
+                    <div class="star-title"><span>3. 위생 및 모둠의 협동</span> <span id="val-q3">0 송이</span></div>
+                    <div class="stars" data-group="q3">
+                        <span class="star" data-val="1">★</span>
+                        <span class="star" data-val="2">★</span>
+                        <span class="star" data-val="3">★</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bonus-box" onclick="toggleBonus()">
+                <div>
+                    <div style="font-size: 1.1rem;">🎬 홍보 영상 참신함 보너스</div>
+                    <div style="font-size: 0.85rem; margin-top: 3px; font-weight: normal;">영상이 훌륭했다면 체크해주세요! (+1송이)</div>
+                </div>
+                <input type="checkbox" id="bonusPoint" onclick="event.stopPropagation(); calcTotal();">
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <label class="title">✍️ 선생님의 한 줄 평</label>
+                <textarea id="review" rows="3" placeholder="아이들에게 힘이 되는 따뜻한 맛 평가를 남겨주세요! (선택)" style="margin-bottom: 0;"></textarea>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <button class="reset-btn" onclick="resetAll()">🔄<br>초기화</button>
+            <div class="total-text">최종 투자액<br><span class="total-score" id="totalDisplay">0</span> 송이</div>
+            <button class="submit-btn" onclick="submitEvaluation()">🚀 송금하기</button>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <div>투자금을 송금하는 중...</div>
+    </div>
+
+    <script>
+        // 별점 로직
+        const scores = { q1: 0, q2: 0, q3: 0, bonus: 0 };
+        
+        document.querySelectorAll('.stars').forEach(group => {
+            const stars = group.querySelectorAll('.star');
+            const groupId = group.getAttribute('data-group');
+            
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const val = parseInt(star.getAttribute('data-val'));
+                    scores[groupId] = val;
+                    
+                    // UI 업데이트
+                    stars.forEach(s => s.classList.remove('active'));
+                    for(let i=0; i<val; i++) {
+                        stars[i].classList.add('active');
+                    }
+                    document.getElementById(`val-${groupId}`).innerText = `${val} 송이`;
+                    calcTotal();
+                });
+            });
+        });
+
+        function toggleBonus() {
+            const cb = document.getElementById('bonusPoint');
+            cb.checked = !cb.checked;
+            calcTotal();
+        }
+
+        function calcTotal() {
+            scores.bonus = document.getElementById('bonusPoint').checked ? 1 : 0;
+            const total = scores.q1 + scores.q2 + scores.q3 + scores.bonus;
+            document.getElementById('totalDisplay').innerText = total;
+            return total;
+        }
+
+        // 전체 초기화 (처음부터 다시하기) 함수
+        function resetAll() {
+            if(!confirm("모든 입력 내용을 지우고 처음부터 다시 하시겠습니까?")) return;
+            
+            // 인증 정보 및 모둠 선택 초기화
+            document.getElementById('teacherName').value = "";
+            document.getElementById('extNumber').value = "";
+            document.getElementById('teamName').value = "";
+            
+            // 별점 및 점수 초기화
+            scores.q1 = 0; scores.q2 = 0; scores.q3 = 0; scores.bonus = 0;
+            document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+            document.getElementById('val-q1').innerText = "0 송이";
+            document.getElementById('val-q2').innerText = "0 송이";
+            document.getElementById('val-q3').innerText = "0 송이";
+            
+            // 보너스 및 텍스트 초기화
+            document.getElementById('bonusPoint').checked = false;
+            document.getElementById('review').value = "";
+            
+            calcTotal();
+        }
+
+        // 제출 로직
+        function submitEvaluation() {
+            const tName = document.getElementById('teacherName').value.trim();
+            const tExt = document.getElementById('extNumber').value.trim();
+            const team = document.getElementById('teamName').value;
+            
+            if(!tName) { alert('투자자 인증을 위해 선생님 성함을 입력해주세요!'); return; }
+            if(!tExt) { alert('투자자 인증을 위해 교내 내선번호를 입력해주세요!'); return; }
+            if(!team) { alert('평가할 맛집(모둠)을 선택해주세요!'); return; }
+            if(scores.q1 === 0 || scores.q2 === 0 || scores.q3 === 0) {
+                alert('모든 항목의 별점을 입력해주세요!'); return;
+            }
+
+            const total = calcTotal();
+            const review = document.getElementById('review').value;
+
+            if(confirm(`[${team}]에 총 ${total}송이를 투자하시겠습니까?`)) {
+                
+                // ★★★ 선생님 수정 부분 ★★★
+                // 아래 URL을 선생님의 앱스스크립트(웹앱) URL로 변경하세요.
+                const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgfquSLrtQHeod1WJO6FMFUWLgj9dH_2GjJ0cxQcop6Wnx5b4WVRL58yF8Z5TMFXa5/exec"; 
+
+                if (APPS_SCRIPT_URL === "") {
+                    document.getElementById('loading').style.display = 'flex';
+                    setTimeout(() => {
+                        document.getElementById('loading').style.display = 'none';
+                        alert('URL이 입력되지 않았습니다. 메모장으로 HTML 파일을 열어 APPS_SCRIPT_URL을 넣어주세요.');
+                    }, 1000);
+                } else {
+                    document.getElementById('loading').style.display = 'flex';
+                    
+                    const payload = {
+                        teacherName: tName, extNumber: tExt, // 추가된 데이터
+                        team: team, q1: scores.q1, q2: scores.q2, q3: scores.q3,
+                        bonus: scores.bonus, total: total, review: review
+                    };
+
+                    fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(payload)
+                    }).then(res => {
+                        document.getElementById('loading').style.display = 'none';
+                        alert(`🎉 성공적으로 투자금이 송금되었습니다!
+(다른 모둠을 평가하려면 '초기화' 버튼을 눌러주세요)`);
+                        resetAll(); 
+                    }).catch(err => {
+                        document.getElementById('loading').style.display = 'none';
+                        alert('전송 중 오류가 발생했습니다. 앱스스크립트 권한을 다시 확인해주세요.');
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
